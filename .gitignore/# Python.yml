@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+
+# Docker y datos persistentes
+.env
+*.log
+
+# Si tienes carpetas de datos locales
+*.dump
+*.sql
