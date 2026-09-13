@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_salon_root" name="Salon" sequence="50"
+              groups="beauty_appointment.group_salon_user"/>
+
+    <menuitem id="menu_salon_appointments" name="Appointments"
+              parent="menu_salon_root" action="action_salon_appointment" sequence="10"/>
+
+    <menuitem id="menu_salon_config" name="Configuration"
+              parent="menu_salon_root" sequence="90"
+              groups="beauty_appointment.group_salon_manager"/>
+
+    <menuitem id="menu_salon_type" name="Booking Pages"
+              parent="menu_salon_config" action="action_salon_appointment_type" sequence="10"/>
+
+    <menuitem id="menu_salon_service" name="Services"
+              parent="menu_salon_config" action="action_salon_service" sequence="20"/>
+
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="calendar_alarm_salon_email_24h" model="calendar.alarm">
+        <field name="name">Salon: Email reminder - 1 day before</field>
+        <field name="alarm_type">email</field>
+        <field name="interval">days</field>
+        <field name="duration">1</field>
+    </record>
+
+    <record id="calendar_alarm_salon_notif_2h" model="calendar.alarm">
+        <field name="name">Salon: Email reminder - 2 hours before</field>
+        <field name="alarm_type">email</field>
+        <field name="interval">hours</field>
+        <field name="duration">2</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,32 @@
+.o_salon_booking .o_salon_card {
+    cursor: pointer;
+    transition: box-shadow .15s ease, border-color .15s ease;
+}
+
+.o_salon_booking .o_salon_card:hover {
+    box-shadow: 0 0 0 1px var(--bs-primary, #714B67);
+}
+
+.o_salon_booking .o_salon_card.active {
+    border-color: var(--bs-primary, #714B67);
+    box-shadow: 0 0 0 2px var(--bs-primary, #714B67);
+}
+
+.o_salon_booking .o_salon_card.o_salon_disabled {
+    opacity: .35;
+    pointer-events: none;
+}
+
+.o_salon_booking .o_salon_slot_btn {
+    min-width: 84px;
+}
+
+/* Honeypot: invisible to sighted humans, hidden from assistive tech via
+   aria-hidden on the wrapper. A bot filling every input still fills it. */
+.o_salon_booking .o_salon_hp {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}

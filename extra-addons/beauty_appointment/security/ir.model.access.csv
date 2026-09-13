@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_salon_appointment_user,salon.appointment.user,model_salon_appointment,beauty_appointment.group_salon_user,1,1,1,0
+access_salon_appointment_manager,salon.appointment.manager,model_salon_appointment,beauty_appointment.group_salon_manager,1,1,1,1
+access_salon_appointment_type_user,salon.appointment.type.user,model_salon_appointment_type,beauty_appointment.group_salon_user,1,0,0,0
+access_salon_appointment_type_manager,salon.appointment.type.manager,model_salon_appointment_type,beauty_appointment.group_salon_manager,1,1,1,1

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="mail_template_salon_confirmation" model="mail.template">
+        <field name="name">Salon: Appointment Confirmation</field>
+        <field name="model_id" ref="model_salon_appointment"/>
+        <field name="subject">Your appointment at {{ object.company_id.name }} is confirmed</field>
+        <field name="email_to">{{ object.partner_id.email }}</field>
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+                <p>Hi <t t-out="object.partner_id.name or ''"/>,</p>
+                <p>Your appointment at <t t-out="object.company_id.name"/> is confirmed:</p>
+                <ul>
+                    <li><strong>Service:</strong> <t t-out="object.service_id.name"/></li>
+                    <li><strong>With:</strong> <t t-out="object.employee_id.name"/></li>
+                    <li><strong>When:</strong> <t t-out="object.start_display"/></li>
+                    <li><strong>Reference:</strong> <t t-out="object.name"/></li>
+                </ul>
+                <p>
+                    <a t-attf-href="{{ object.get_base_url() }}/salon/booking/{{ object.access_token }}"
+                       style="background-color: #714B67; color: #fff; padding: 8px 16px; text-decoration: none; border-radius: 4px;">
+                        View my appointment
+                    </a>
+                </p>
+                <p style="color: #888; font-size: 12px;">
+                    If anything looks wrong, just reply to this email.
+                </p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

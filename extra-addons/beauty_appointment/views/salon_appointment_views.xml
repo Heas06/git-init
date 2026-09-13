@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_salon_appointment_list" model="ir.ui.view">
+        <field name="name">salon.appointment.list</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state in ('cancelled', 'no_show')"
+                  decoration-success="state == 'done'"
+                  decoration-bf="state == 'confirmed'">
+                <field name="name"/>
+                <field name="start"/>
+                <field name="stop" optional="hide"/>
+                <field name="partner_id"/>
+                <field name="service_id"/>
+                <field name="employee_id"/>
+                <field name="duration" widget="float_time" optional="hide"/>
+                <field name="price" widget="monetary" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-warning="state == 'draft'"
+                       decoration-danger="state == 'no_show'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_salon_appointment_form" model="ir.ui.view">
+        <field name="name">salon.appointment.form</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_done" type="object" string="Mark as Done"
+                            class="btn-primary" invisible="state != 'confirmed'"/>
+                    <button name="action_no_show" type="object" string="No Show"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('cancelled', 'done', 'no_show')"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state not in ('cancelled', 'no_show')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_calendar_event" type="object"
+                                class="oe_stat_button" icon="fa-calendar"
+                                invisible="not calendar_event_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Calendar Event</span>
+                            </div>
+                        </button>
+                        <button name="action_view_lead" type="object"
+                                class="oe_stat_button" icon="fa-star"
+                                invisible="not lead_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">CRM Lead</span>
+                            </div>
+                        </button>
+                        <button name="action_view_sale_order" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not sale_order_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Sales Order</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group name="customer" string="Customer">
+                            <field name="partner_id"/>
+                            <field name="partner_phone"/>
+                            <field name="partner_email"/>
+                            <field name="appointment_type_id"/>
+                        </group>
+                        <group name="schedule" string="Schedule">
+                            <field name="service_id"/>
+                            <field name="employee_id"/>
+                            <field name="start"/>
+                            <field name="duration" widget="float_time"/>
+                            <field name="buffer" widget="float_time"/>
+                            <field name="stop" readonly="1"/>
+                            <field name="price"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes" name="notes">
+                            <field name="note" placeholder="Internal notes about this appointment..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_salon_appointment_calendar" model="ir.ui.view">
+        <field name="name">salon.appointment.calendar</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <calendar string="Appointments" date_start="start" date_stop="stop"
+                      color="employee_id" mode="week" quick_create="0"
+                      event_open_popup="1">
+                <field name="employee_id" filters="1" invisible="1"/>
+                <field name="partner_id"/>
+                <field name="service_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_salon_appointment_search" model="ir.ui.view">
+        <field name="name">salon.appointment.search</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="service_id"/>
+                <field name="employee_id"/>
+                <filter name="upcoming" string="Upcoming"
+                        domain="[('start', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="my_staff_record" string="Assigned to Me"
+                        domain="[('employee_id.user_id', '=', uid)]"/>
+                <group>
+                    <filter name="group_employee" string="Staff"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_service" string="Service"
+                            context="{'group_by': 'service_id'}"/>
+                    <filter name="group_state" string="Status"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_start" string="Start Date"
+                            context="{'group_by': 'start:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_salon_appointment" model="ir.actions.act_window">
+        <field name="name">Appointments</field>
+        <field name="res_model">salon.appointment</field>
+        <field name="view_mode">calendar,list,form</field>
+        <field name="context">{'search_default_upcoming': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Schedule your first appointment</p>
+            <p>Book a customer with a staff member for a service. The slot is held
+               until the appointment is cancelled.</p>
+        </field>
+    </record>
+
+</odoo>

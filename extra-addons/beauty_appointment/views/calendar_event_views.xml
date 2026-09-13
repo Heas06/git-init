@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="calendar_event_form_salon" model="ir.ui.view">
+        <field name="name">calendar.event.form.salon</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_salon_appointments" type="object"
+                        class="oe_stat_button" icon="fa-cut"
+                        invisible="not salon_appointment_count">
+                    <field name="salon_appointment_count" widget="statinfo"
+                           string="Appointment"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

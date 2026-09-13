@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Services -->
+    <record id="service_haircut" model="product.template">
+        <field name="name">Haircut &amp; Style</field>
+        <field name="type">service</field>
+        <field name="salon_service">True</field>
+        <field name="salon_duration">0.75</field>
+        <field name="salon_buffer">0.25</field>
+        <field name="list_price">35.0</field>
+    </record>
+
+    <record id="service_color" model="product.template">
+        <field name="name">Hair Color</field>
+        <field name="type">service</field>
+        <field name="salon_service">True</field>
+        <field name="salon_duration">1.5</field>
+        <field name="salon_buffer">0.25</field>
+        <field name="list_price">75.0</field>
+    </record>
+
+    <record id="service_manicure" model="product.template">
+        <field name="name">Manicure</field>
+        <field name="type">service</field>
+        <field name="salon_service">True</field>
+        <field name="salon_duration">0.5</field>
+        <field name="salon_buffer">0.0</field>
+        <field name="list_price">25.0</field>
+    </record>
+
+    <!-- Staff -->
+    <record id="staff_ana" model="hr.employee">
+        <field name="name">Ana Ruiz</field>
+        <field name="is_salon_staff">True</field>
+        <field name="resource_calendar_id" ref="resource.resource_calendar_std"/>
+        <field name="salon_service_ids"
+               eval="[(6, 0, [ref('service_haircut'), ref('service_color')])]"/>
+    </record>
+
+    <record id="staff_luis" model="hr.employee">
+        <field name="name">Luis Peña</field>
+        <field name="is_salon_staff">True</field>
+        <field name="resource_calendar_id" ref="resource.resource_calendar_std"/>
+        <field name="salon_service_ids"
+               eval="[(6, 0, [ref('service_haircut'), ref('service_manicure')])]"/>
+    </record>
+
+    <!-- Booking page -->
+    <record id="appointment_type_main" model="salon.appointment.type">
+        <field name="name">Book Online</field>
+        <field name="slug">book</field>
+        <field name="service_ids"
+               eval="[(6, 0, [ref('service_haircut'), ref('service_color'), ref('service_manicure')])]"/>
+        <field name="employee_ids" eval="[(6, 0, [ref('staff_ana'), ref('staff_luis')])]"/>
+    </record>
+
+    <!-- Customers -->
+    <record id="customer_maria" model="res.partner">
+        <field name="name">María González</field>
+        <field name="email">maria.gonzalez@example.com</field>
+        <field name="phone">+57 300 111 2233</field>
+    </record>
+
+    <record id="customer_carlos" model="res.partner">
+        <field name="name">Carlos Ramírez</field>
+        <field name="email">carlos.ramirez@example.com</field>
+        <field name="phone">+57 301 444 5566</field>
+    </record>
+
+    <!-- Sample appointments -->
+    <record id="appointment_demo_1" model="salon.appointment">
+        <field name="partner_id" ref="customer_maria"/>
+        <field name="appointment_type_id" ref="appointment_type_main"/>
+        <field name="service_id" ref="service_haircut"/>
+        <field name="employee_id" ref="staff_ana"/>
+        <field name="start"
+               eval="(datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d 14:00:00')"/>
+        <field name="state">confirmed</field>
+    </record>
+
+    <record id="appointment_demo_2" model="salon.appointment">
+        <field name="partner_id" ref="customer_carlos"/>
+        <field name="appointment_type_id" ref="appointment_type_main"/>
+        <field name="service_id" ref="service_manicure"/>
+        <field name="employee_id" ref="staff_luis"/>
+        <field name="start"
+               eval="(datetime.now() + timedelta(days=2)).strftime('%Y-%m-%d 11:00:00')"/>
+        <field name="state">draft</field>
+    </record>
+
+</odoo>

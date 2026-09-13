@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_salon_appointment_type_list" model="ir.ui.view">
+        <field name="name">salon.appointment.type.list</field>
+        <field name="model">salon.appointment.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="slug"/>
+                <field name="tz"/>
+                <field name="appointment_count" string="Appointments"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_salon_appointment_type_form" model="ir.ui.view">
+        <field name="name">salon.appointment.type.form</field>
+        <field name="model">salon.appointment.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_appointments" type="object"
+                                class="oe_stat_button" icon="fa-calendar">
+                            <field name="appointment_count" widget="statinfo" string="Appointments"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Book Online"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="slug"/>
+                            <field name="public_url" widget="CopyClipboardURL"
+                                   invisible="not slug" readonly="1"/>
+                            <field name="tz"/>
+                            <field name="crm_team_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Scheduling Rules">
+                            <field name="min_hours_before" widget="float_time"/>
+                            <field name="max_days_ahead"/>
+                            <field name="slot_granularity" widget="float_time"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Services" name="services">
+                            <field name="service_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="salon_duration" widget="float_time"/>
+                                    <field name="salon_buffer" widget="float_time"/>
+                                    <field name="list_price"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Staff" name="staff">
+                            <field name="employee_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="resource_calendar_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_salon_appointment_type" model="ir.actions.act_window">
+        <field name="name">Booking Pages</field>
+        <field name="res_model">salon.appointment.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a booking page</p>
+            <p>Each booking page becomes a shareable link with its own services,
+               staff and scheduling rules.</p>
+        </field>
+    </record>
+
+    <record id="action_salon_service" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('salon_service', '=', True)]</field>
+        <field name="context">{'default_salon_service': True, 'default_type': 'service'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a salon service</p>
+            <p>Services are products with a duration and a price. They can be
+               invoiced through Sales once the appointment is done.</p>
+        </field>
+    </record>
+
+</odoo>

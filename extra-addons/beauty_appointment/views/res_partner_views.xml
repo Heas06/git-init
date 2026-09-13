@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_beauty_custom" model="ir.ui.view">
+        <field name="name">res.partner.form.beauty.custom</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <data>
+                <!-- Ocultar campos sin romper la herencia -->
+                <xpath expr="//field[@name='parent_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='function']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='website']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <!-- Agregar la nueva pestaña de Peluquería & Preferencias -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Peluquería &amp; Preferencias" name="beauty_preferences">
+                        <group>
+                            <group string="Atención al Cliente">
+                                <field name="x_preferencia_bebida"/>
+                                <field name="x_condiciones_alergias" placeholder="Ej. Alergia a aceites de lavanda, piel sensible, presión alta"/>
+                            </group>
+                            <group string="Fórmulas Técnicas">
+                                <field name="x_formulas_tonalidades" placeholder="Ej. Tono de tinte base utilizado previo, fórmulas de color"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+</odoo>
