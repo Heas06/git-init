@@ -131,6 +131,21 @@ docker cp ~/Desktop/restore/filestore/. mi-crm-odoo-web-1:/var/lib/odoo/filestor
 docker compose exec -u root web chown -R odoo:odoo /var/lib/odoo/filestore/Platinium
 ```
 
+> ⚠️ **En Windows con Git Bash:** Git Bash traduce automáticamente
+> cualquier argumento que empiece con `/` a una ruta de Windows dentro de
+> la carpeta de instalación de Git (ej. `/var/lib/...` se convierte en
+> `C:/Program Files/Git/var/lib/...`), lo que rompe rutas que en realidad
+> viven DENTRO del contenedor Linux. El `docker cp` de arriba no se ve
+> afectado (el `container:` antes de la ruta lo protege), pero el `chown`
+> sí. Si ves un error tipo `chown: cannot access 'C:/Program
+> Files/Git/var/lib/...'`, usa doble slash al inicio para que Git Bash no
+> la toque:
+> ```bash
+> docker compose exec -u root web chown -R odoo:odoo //var/lib/odoo/filestore/Platinium
+> ```
+> (Si usas PowerShell o cmd.exe en vez de Git Bash, este problema no
+> existe y el comando original funciona tal cual.)
+
 **4.4. Reiniciar Odoo:**
 
 ```bash
