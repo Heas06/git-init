@@ -1,5 +1,9 @@
 tunnel: 20754198-e745-4374-ac0e-036f65079736
-credentials-file: ~/.cloudflared/20754198-e745-4374-ac0e-036f65079736.json
+# Sin "credentials-file" a proposito: cloudflared ya sabe encontrar solo
+# <tunnel-id>.json junto al cert.pem que crea "cloudflared tunnel login"
+# (~/.cloudflared en Mac/Linux, %USERPROFILE%\.cloudflared en Windows). Un
+# "~" escrito a mano aqui se resuelve mal en Windows (pierde el punto de
+# ".cloudflared"), asi que dejamos que lo resuelva el propio cloudflared.
 
 ingress:
   # Solo lo necesario para que /salon/<slug> funcione: la pagina en si, los
