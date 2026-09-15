@@ -4,6 +4,7 @@ services:
   web:
     image: odoo:19.0
     container_name: mi-crm-odoo-web-1
+    restart: unless-stopped
     depends_on:
       - db
     ports:
@@ -20,6 +21,7 @@ services:
   db:
     image: postgres:15
     container_name: mi-crm-odoo-db-1
+    restart: unless-stopped
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=odoo
