@@ -7,6 +7,9 @@
     <menuitem id="menu_salon_appointments" name="Appointments"
               parent="menu_salon_root" action="action_salon_appointment" sequence="10"/>
 
+    <menuitem id="menu_salon_report" name="Producción"
+              parent="menu_salon_root" action="action_salon_appointment_report" sequence="20"/>
+
     <menuitem id="menu_salon_config" name="Configuration"
               parent="menu_salon_root" sequence="90"
               groups="beauty_appointment.group_salon_manager"/>

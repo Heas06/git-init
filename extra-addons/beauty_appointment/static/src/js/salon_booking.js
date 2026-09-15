@@ -29,15 +29,15 @@
     }
 
     var ERROR_MESSAGES = {
-        not_found: "This booking page is no longer available.",
-        invalid_service: "Please choose a service.",
-        invalid_employee: "Please choose a staff member.",
-        invalid_name: "Please enter your name.",
-        missing_contact: "Please enter a phone number or email.",
-        invalid_input: "Please pick a time slot.",
+        not_found: "Esta página de citas ya no está disponible.",
+        invalid_service: "Por favor elige un servicio.",
+        invalid_employee: "Por favor elige un profesional.",
+        invalid_name: "Por favor ingresa tu nombre.",
+        missing_contact: "Por favor ingresa un teléfono o correo electrónico.",
+        invalid_input: "Por favor elige un horario.",
         slot_unavailable:
-            "Sorry, that time was just booked by someone else. Please pick another slot.",
-        rate_limited: "Too many booking attempts. Please try again later.",
+            "Lo sentimos, ese horario acaba de ser reservado por alguien más. Por favor elige otro.",
+        rate_limited: "Demasiados intentos de reserva. Por favor intenta más tarde.",
     };
 
     // NOTE: this file is loaded through Odoo's `web.assets_frontend_lazy`
@@ -57,6 +57,7 @@
 
         var state = { serviceId: null, employeeId: "", start: null };
 
+        var stepService = document.getElementById("o_salon_step_service");
         var stepStaff = document.getElementById("o_salon_step_staff");
         var stepDate = document.getElementById("o_salon_step_date");
         var stepContact = document.getElementById("o_salon_step_contact");
@@ -77,6 +78,49 @@
             errorBox.textContent = "";
         }
 
+        // --- Accordion: once a step's choice is made, collapse it to a
+        // single summary line so the next step is visible without scrolling
+        // past a long list of services (important on a phone). The header
+        // stays clickable so a visitor can reopen a step to change an
+        // earlier answer. -------------------------------------------------
+        function collapseStep(stepEl, summaryText) {
+            var summary = stepEl.querySelector(".o_salon_step_summary");
+            if (summary) {
+                summary.textContent = summaryText || "";
+            }
+            stepEl.classList.add("o_salon_collapsed");
+        }
+
+        function resetStep(stepEl) {
+            var summary = stepEl.querySelector(".o_salon_step_summary");
+            if (summary) {
+                summary.textContent = "";
+            }
+            stepEl.classList.remove("o_salon_collapsed");
+        }
+
+        // Collapsing a long step (e.g. 14 service cards) shrinks the page a
+        // lot in one frame. Left alone, the browser keeps the same scrollY,
+        // which can now be past the end of the (much shorter) document, so
+        // it clamps to the bottom and the visitor ends up staring at the
+        // footer. Scroll back to the very top instead, so the salon header
+        // and the whole step trail are visible - on a phone, landing mid-page
+        // on just the next step (with no header/title in view) reads as if
+        // the page had lost its content.
+        function scrollToStep() {
+            requestAnimationFrame(function () {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        }
+
+        [stepService, stepStaff, stepDate].forEach(function (stepEl) {
+            stepEl
+                .querySelector(".o_salon_step_header")
+                .addEventListener("click", function () {
+                    stepEl.classList.toggle("o_salon_collapsed");
+                });
+        });
+
         // --- Step 1: service ------------------------------------------------
         document.querySelectorAll(".o_salon_service_card").forEach(function (card) {
             card.addEventListener("click", function () {
@@ -96,10 +140,18 @@
                     staffCard.classList.remove("active");
                 });
 
+                var duration = card.dataset.serviceDuration;
+                collapseStep(
+                    stepService,
+                    card.dataset.serviceName + (duration ? " · " + duration + " h" : "")
+                );
+                resetStep(stepStaff);
+                resetStep(stepDate);
                 stepStaff.classList.remove("d-none");
                 stepDate.classList.add("d-none");
                 stepContact.classList.add("d-none");
                 clearError();
+                scrollToStep(stepStaff);
             });
         });
 
@@ -123,9 +175,15 @@
                 dateInput.min = minDate;
                 dateInput.max = maxDate;
 
+                collapseStep(
+                    stepStaff,
+                    card.dataset.employeeName || "Cualquiera disponible"
+                );
+                resetStep(stepDate);
                 stepDate.classList.remove("d-none");
                 stepContact.classList.add("d-none");
                 clearError();
+                scrollToStep(stepDate);
                 loadSlots();
             });
         });
@@ -136,6 +194,17 @@
             stepContact.classList.add("d-none");
             loadSlots();
         });
+
+        function formatDateLabel(isoDate) {
+            if (!isoDate) {
+                return "";
+            }
+            // Parse as local date (new Date("YYYY-MM-DD") would be UTC midnight
+            // and could shift a day depending on the visitor's timezone).
+            var parts = isoDate.split("-");
+            var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+            return d.toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+        }
 
         function loadSlots() {
             slotsBox.innerHTML = "";
@@ -167,14 +236,16 @@
                                 .forEach(function (b) { b.classList.remove("active"); });
                             btn.classList.add("active");
                             state.start = slot.start;
+                            collapseStep(stepDate, formatDateLabel(dateInput.value) + " · " + slot.label);
                             stepContact.classList.remove("d-none");
                             clearError();
+                            scrollToStep(stepContact);
                         });
                         slotsBox.appendChild(btn);
                     });
                 })
                 .catch(function () {
-                    showError("Could not load available times. Please try again.");
+                    showError("No se pudieron cargar los horarios disponibles. Intenta de nuevo.");
                 });
         }
 
@@ -203,7 +274,7 @@
                         return;
                     }
                     if (result && result.error) {
-                        showError(ERROR_MESSAGES[result.error] || "Something went wrong.");
+                        showError(ERROR_MESSAGES[result.error] || "Algo salió mal.");
                         if (result.error === "slot_unavailable") {
                             loadSlots();
                         }
@@ -211,7 +282,7 @@
                     submitBtn.disabled = false;
                 })
                 .catch(function () {
-                    showError("Something went wrong. Please try again.");
+                    showError("Algo salió mal. Intenta de nuevo.");
                     submitBtn.disabled = false;
                 });
         });

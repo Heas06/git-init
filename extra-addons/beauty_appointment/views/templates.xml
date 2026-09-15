@@ -15,88 +15,110 @@
                         <p class="lead text-muted" t-out="atype.name"/>
                     </div>
 
-                    <div class="o_salon_step" id="o_salon_step_service">
-                        <h3 class="mb-3">1. Choose a service</h3>
-                        <div class="row g-3">
-                            <t t-foreach="services" t-as="service">
-                                <div class="col-12 col-md-6 col-lg-4">
-                                    <div class="card o_salon_card o_salon_service_card h-100"
-                                         t-att-data-service-id="service.id"
-                                         role="button" tabindex="0">
-                                        <div class="card-body">
-                                            <h5 class="card-title" t-out="service.name"/>
-                                            <p class="card-text text-muted mb-1">
-                                                <t t-out="service.salon_duration"/> h
-                                            </p>
-                                            <p class="card-text fw-bold">
-                                                <span t-field="service.list_price"
-                                                      t-options="{'widget': 'monetary', 'display_currency': service.currency_id}"/>
-                                            </p>
+                    <div class="o_salon_step o_salon_accordion" id="o_salon_step_service">
+                        <div class="o_salon_step_header" role="button" tabindex="0">
+                            <h3 class="mb-0">1. Elige un servicio</h3>
+                            <span class="o_salon_step_summary text-muted"/>
+                            <i class="o_salon_step_chevron"/>
+                        </div>
+                        <div class="o_salon_step_body">
+                            <div class="row g-3">
+                                <t t-foreach="services" t-as="service">
+                                    <div class="col-12 col-md-6 col-lg-4">
+                                        <div class="card o_salon_card o_salon_service_card h-100"
+                                             t-att-data-service-id="service.id"
+                                             t-att-data-service-name="service.name"
+                                             t-att-data-service-duration="service.salon_duration"
+                                             role="button" tabindex="0">
+                                            <div class="card-body">
+                                                <h5 class="card-title" t-out="service.name"/>
+                                                <p class="card-text text-muted mb-1">
+                                                    <t t-out="service.salon_duration"/> h
+                                                </p>
+                                                <p class="card-text fw-bold">
+                                                    <span t-field="service.list_price"
+                                                          t-options="{'widget': 'monetary', 'display_currency': service.currency_id}"/>
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </t>
+                                </t>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="o_salon_step d-none" id="o_salon_step_staff">
-                        <h3 class="mb-3 mt-5">2. Choose a staff member</h3>
-                        <div class="row g-3">
-                            <div class="col-12 col-md-6 col-lg-4">
-                                <div class="card o_salon_card o_salon_staff_card h-100"
-                                     data-employee-id="" role="button" tabindex="0">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Any available</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <t t-foreach="employees" t-as="employee">
+                    <div class="o_salon_step d-none o_salon_accordion" id="o_salon_step_staff">
+                        <div class="o_salon_step_header" role="button" tabindex="0">
+                            <h3 class="mb-0">2. Elige un profesional</h3>
+                            <span class="o_salon_step_summary text-muted"/>
+                            <i class="o_salon_step_chevron"/>
+                        </div>
+                        <div class="o_salon_step_body">
+                            <div class="row g-3">
                                 <div class="col-12 col-md-6 col-lg-4">
                                     <div class="card o_salon_card o_salon_staff_card h-100"
-                                         t-att-data-employee-id="employee.id"
-                                         t-att-data-service-ids="','.join(str(i) for i in employee.salon_service_ids.ids)"
+                                         data-employee-id="" data-employee-name="Cualquiera disponible"
                                          role="button" tabindex="0">
                                         <div class="card-body">
-                                            <h5 class="card-title" t-out="employee.name"/>
+                                            <h5 class="card-title">Cualquiera disponible</h5>
                                         </div>
                                     </div>
                                 </div>
-                            </t>
+                                <t t-foreach="employees" t-as="employee">
+                                    <div class="col-12 col-md-6 col-lg-4">
+                                        <div class="card o_salon_card o_salon_staff_card h-100"
+                                             t-att-data-employee-id="employee.id"
+                                             t-att-data-employee-name="employee.name"
+                                             t-att-data-service-ids="','.join(str(i) for i in employee.salon_service_ids.ids)"
+                                             role="button" tabindex="0">
+                                            <div class="card-body">
+                                                <h5 class="card-title" t-out="employee.name"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="o_salon_step d-none" id="o_salon_step_date">
-                        <h3 class="mb-3 mt-5">3. Pick a date and time</h3>
-                        <input type="date" id="o_salon_date" class="form-control mb-3" style="max-width: 220px;"/>
-                        <div id="o_salon_slots" class="d-flex flex-wrap gap-2"/>
-                        <p id="o_salon_slots_empty" class="text-muted d-none">
-                            No times available this day. Try another date.
-                        </p>
+                    <div class="o_salon_step d-none o_salon_accordion" id="o_salon_step_date">
+                        <div class="o_salon_step_header" role="button" tabindex="0">
+                            <h3 class="mb-0">3. Elige fecha y hora</h3>
+                            <span class="o_salon_step_summary text-muted"/>
+                            <i class="o_salon_step_chevron"/>
+                        </div>
+                        <div class="o_salon_step_body">
+                            <input type="date" id="o_salon_date" class="form-control mb-3" style="max-width: 220px;"/>
+                            <div id="o_salon_slots" class="d-flex flex-wrap gap-2"/>
+                            <p id="o_salon_slots_empty" class="text-muted d-none">
+                                No hay horarios disponibles este día. Prueba otra fecha.
+                            </p>
+                        </div>
                     </div>
 
                     <div class="o_salon_step d-none" id="o_salon_step_contact">
-                        <h3 class="mb-3 mt-5">4. Your details</h3>
+                        <h3 class="mb-3 mt-5">4. Tus datos</h3>
                         <form id="o_salon_form" class="row g-3" style="max-width: 480px;">
                             <div class="col-12">
-                                <label class="form-label">Full name *</label>
+                                <label class="form-label">Nombre completo *</label>
                                 <input type="text" name="name" class="form-control" required="required"/>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Phone</label>
+                                <label class="form-label">Teléfono</label>
                                 <input type="tel" name="phone" class="form-control"/>
                             </div>
                             <div class="col-12">
-                                <label class="form-label">Email</label>
+                                <label class="form-label">Correo electrónico</label>
                                 <input type="email" name="email" class="form-control"/>
                             </div>
                             <div class="o_salon_hp" aria-hidden="true">
-                                <label for="o_salon_hp_input">Leave this field blank</label>
+                                <label for="o_salon_hp_input">Deja este campo en blanco</label>
                                 <input id="o_salon_hp_input" type="text" name="hp" tabindex="-1" autocomplete="off"/>
                             </div>
-                            <p class="text-muted small mb-0">At least a phone number or an email is required.</p>
+                            <p class="text-muted small mb-0">Se requiere al menos un teléfono o un correo electrónico.</p>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary" id="o_salon_submit">
-                                    Confirm appointment
+                                    Confirmar cita
                                 </button>
                             </div>
                             <div class="col-12">
@@ -111,21 +133,29 @@
 
     <template id="salon_booking_status" name="Salon Booking Status">
         <t t-call="website.layout">
-            <t t-set="additional_title">Your appointment</t>
+            <t t-set="additional_title">Tu cita</t>
             <div id="wrap">
                 <div class="container py-5" style="max-width: 560px;">
                     <div class="card">
                         <div class="card-body">
                             <h3 class="card-title mb-3">
-                                <t t-if="appointment.state == 'cancelled'">Appointment cancelled</t>
-                                <t t-elif="appointment.state == 'no_show'">Marked as no-show</t>
-                                <t t-else="">You're booked!</t>
+                                <t t-if="appointment.state == 'cancelled'">Cita cancelada</t>
+                                <t t-elif="appointment.state == 'no_show'">Marcada como no asistió</t>
+                                <t t-else="">¡Tu cita está agendada!</t>
                             </h3>
-                            <p><strong>Reference:</strong> <t t-out="appointment.name"/></p>
-                            <p><strong>Service:</strong> <t t-out="appointment.service_id.name"/></p>
-                            <p><strong>With:</strong> <t t-out="appointment.employee_id.name"/></p>
-                            <p><strong>When:</strong> <t t-out="appointment.start_display"/></p>
-                            <p class="mb-0"><strong>Status:</strong> <span t-out="appointment.state"/></p>
+                            <p><strong>Referencia:</strong> <t t-out="appointment.name"/></p>
+                            <p><strong>Servicio:</strong> <t t-out="appointment.service_id.name"/></p>
+                            <p><strong>Con:</strong> <t t-out="appointment.employee_id.name"/></p>
+                            <p><strong>Cuándo:</strong> <t t-out="appointment.start_display"/></p>
+                            <p class="mb-0">
+                                <strong>Estado:</strong>
+                                <t t-if="appointment.state == 'draft'">Borrador</t>
+                                <t t-elif="appointment.state == 'confirmed'">Confirmada</t>
+                                <t t-elif="appointment.state == 'done'">Completada</t>
+                                <t t-elif="appointment.state == 'cancelled'">Cancelada</t>
+                                <t t-elif="appointment.state == 'no_show'">No se presentó</t>
+                                <t t-else="" t-out="appointment.state"/>
+                            </p>
                         </div>
                     </div>
                 </div>

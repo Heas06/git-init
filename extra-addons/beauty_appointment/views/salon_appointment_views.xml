@@ -133,6 +133,8 @@
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                 <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
                 <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="billable" string="Facturable (Confirmada + Completada)"
+                        domain="[('state', 'in', ('confirmed', 'done'))]"/>
                 <separator/>
                 <filter name="my_staff_record" string="Assigned to Me"
                         domain="[('employee_id.user_id', '=', uid)]"/>
@@ -145,8 +147,35 @@
                             context="{'group_by': 'state'}"/>
                     <filter name="group_start" string="Start Date"
                             context="{'group_by': 'start:day'}"/>
+                    <filter name="group_start_month" string="Mes"
+                            context="{'group_by': 'start:month'}"/>
                 </group>
             </search>
+        </field>
+    </record>
+
+    <record id="view_salon_appointment_pivot" model="ir.ui.view">
+        <field name="name">salon.appointment.pivot</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <pivot string="Producción del Salón">
+                <field name="employee_id" type="row"/>
+                <field name="service_id" type="row"/>
+                <field name="start" interval="month" type="col"/>
+                <field name="price" type="measure"/>
+                <field name="duration" type="measure" widget="float_time"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_salon_appointment_graph" model="ir.ui.view">
+        <field name="name">salon.appointment.graph</field>
+        <field name="model">salon.appointment</field>
+        <field name="arch" type="xml">
+            <graph string="Producción del Salón" type="bar">
+                <field name="employee_id"/>
+                <field name="price" type="measure"/>
+            </graph>
         </field>
     </record>
 
@@ -159,6 +188,19 @@
             <p class="o_view_nocontent_smiling_face">Schedule your first appointment</p>
             <p>Book a customer with a staff member for a service. The slot is held
                until the appointment is cancelled.</p>
+        </field>
+    </record>
+
+    <record id="action_salon_appointment_report" model="ir.actions.act_window">
+        <field name="name">Producción</field>
+        <field name="res_model">salon.appointment</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="context">{'search_default_billable': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Todavía no hay citas para reportar</p>
+            <p>Ingresos y volumen de citas por profesional y servicio. Por defecto
+               solo cuentan como producción las citas Confirmadas y Completadas -
+               usa los filtros para incluir Borrador o excluir No Show/Cancelada.</p>
         </field>
     </record>
 

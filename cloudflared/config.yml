@@ -1,0 +1,17 @@
+tunnel: 20754198-e745-4374-ac0e-036f65079736
+credentials-file: ~/.cloudflared/20754198-e745-4374-ac0e-036f65079736.json
+
+ingress:
+  # Solo lo necesario para que /salon/<slug> funcione: la pagina en si, los
+  # endpoints JSON de slots/submit, y los assets/imagenes estaticos que
+  # website.layout necesita (CSS/JS del frontend, logo, favicon).
+  - hostname: citas.platinum-spaypeluqueria.co.uk
+    path: ^/(salon(/.*)?|web/(assets|image|content|manifest\.webmanifest)(/.*)?|website/(translations|image)(/.*)?|favicon\.ico)$
+    service: http://localhost:8069
+
+  # Cualquier otra ruta en este subdominio (login, /odoo, /web/database/*,
+  # etc.) no llega al origin.
+  - hostname: citas.platinum-spaypeluqueria.co.uk
+    service: http_status:404
+
+  - service: http_status:404
