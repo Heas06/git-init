@@ -29,6 +29,13 @@
                             <group string="Fórmulas Técnicas">
                                 <field name="x_formulas_tonalidades" placeholder="Ej. Tono de tinte base utilizado previo, fórmulas de color"/>
                             </group>
+                            <group string="Consentimiento Informado">
+                                <field name="x_consentimiento_nombre_archivo" invisible="1"/>
+                                <field name="x_consentimiento_archivo"
+                                       filename="x_consentimiento_nombre_archivo"
+                                       string="Documento Firmado (PDF o Word)"/>
+                                <field name="x_consentimiento_fecha"/>
+                            </group>
                         </group>
                     </page>
                 </xpath>
