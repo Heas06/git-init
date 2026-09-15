@@ -120,15 +120,62 @@ máquina vieja — ver sección 0). Sin este archivo específico, `cloudflared
 tunnel login` solo te da un certificado de cuenta, no las llaves de este
 túnel puntual.
 
-**6.3. Correr el túnel** (desde la carpeta `git-init`):
+**6.3. Instalarlo como servicio permanente** (recomendado — si solo lo corres
+a mano en una terminal, se muere apenas apagues la computadora o cierres esa
+terminal, y el link público dejará de funcionar hasta que lo vuelvas a
+lanzar):
+
+```bash
+ln -sf "$(pwd)/cloudflared/config.yml" ~/.cloudflared/config.yml
+cloudflared service install
+```
+
+⚠️ **Bug conocido de `cloudflared service install`** (visto en macOS,
+versión 2026.9.0): genera el servicio SIN el subcomando `tunnel run` ni
+`--config`, así que arranca y se cae al instante. Verifica y corrige si
+hace falta:
+
+```bash
+pgrep -fl cloudflared   # si no aparece nada corriendo, hay que arreglar el plist
+```
+
+Edita `~/Library/LaunchAgents/com.cloudflare.cloudflared.plist` y asegúrate
+de que `ProgramArguments` sea exactamente esto (reemplaza la ruta del
+binario por la que te dé `which cloudflared` si no usas Homebrew en Apple
+Silicon):
+
+```xml
+<key>ProgramArguments</key>
+<array>
+    <string>/opt/homebrew/bin/cloudflared</string>
+    <string>tunnel</string>
+    <string>--config</string>
+    <string>/Users/TU_USUARIO/.cloudflared/config.yml</string>
+    <string>run</string>
+    <string>citas-platinum-spa</string>
+</array>
+```
+
+Luego recarga el servicio:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
+launchctl load ~/Library/LaunchAgents/com.cloudflare.cloudflared.plist
+pgrep -fl cloudflared   # ahora si deberia aparecer corriendo
+```
+
+Con esto, el túnel arranca solo cada vez que inicias sesión en la
+computadora — no depende de dejar una terminal abierta, y sobrevive un
+apagado/reinicio.
+
+**Alternativa rápida (no permanente):** para probar algo puntual sin instalar
+el servicio, puedes correrlo en primer plano desde la carpeta `git-init`:
 
 ```bash
 cloudflared tunnel --config cloudflared/config.yml run citas-platinum-spa
 ```
 
-Déjalo corriendo en una terminal (o instálalo como servicio del sistema con
-`cloudflared service install` si lo quieres permanente, sin depender de una
-terminal abierta).
+Pero se cae en cuanto cierras esa terminal o apagas la computadora.
 
 **6.4. Probar:** <https://citas.platinum-spaypeluqueria.co.uk/salon/citas>
 
@@ -139,6 +186,11 @@ terminal abierta).
   volúmenes (`odoo-db-data`, `odoo-web-data`); solo hace falta restaurar tras
   un `docker compose down -v` (que sí borra los volúmenes) o en una máquina
   nueva de verdad.
+- Si el link público (`citas.platinum-spaypeluqueria.co.uk`) da error 530
+  ("no hay túnel activo") pero `http://localhost:8069` sí funciona, es que
+  el proceso `cloudflared` no está corriendo — revisa con `pgrep -fl
+  cloudflared` y, si instalaste el servicio permanente (sección 6.3), con
+  `launchctl list | grep cloudflare`.
 - El gestor de bases de datos web (`/web/database/manager`) está
   deliberadamente **deshabilitado** (`list_db = False` en `odoo.conf`) por
   seguridad, ya que el sitio está expuesto a internet vía Cloudflare Tunnel.
